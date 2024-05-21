@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.use(express.json());
 
+/*---------------handler---------------*/
 const joinHandler = async(req, res) => {
     const { name, email, pwd } = req.body;
 
@@ -38,7 +39,7 @@ const loginHandler = async(req, res) => {
     }
 };
 
-
+/*---------------router---------------*/
 router.post('/join',
     joinHandler
 );
