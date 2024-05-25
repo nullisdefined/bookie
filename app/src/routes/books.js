@@ -1,26 +1,10 @@
 const express = require('express');
-const router = express();
+const bookController = require('../controllers/bookController');
 
+const router = express();
 router.use(express.json());
 
-const getAllBooksHandler = (req, res) => {
-
-};
-const getBookHandler = (req, res) => {
-
-};
-const getBooksByCategoryHandler = (req, res) => {
-
-};
-
-router.get('/books',
-    getAllBooksHandler
-);
-router.get('/books/:id',
-    getBookHandler
-);
-router.get('/books',
-    getBooksByCategoryHandler
-)
+router.get('/', bookController.authenticateToken, bookController.getAllBooksHandler);
+router.get('/:id', bookController.authenticateToken, bookController.getBookHandler);
 
 module.exports = router;

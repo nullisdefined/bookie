@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const indexRouter = require('./src/routes/index');
 const userRouter = require('./src/routes/users');
 const bookRouter = require('./src/routes/books');
+const categoryRouter = require('./src/routes/category');
 const likeRouter = require('./src/routes/likes');
 
 dotenv.config({ path: path.join(__dirname, '..', '.env')});
@@ -18,6 +19,7 @@ app.use(cookieParser());
 app.use(indexRouter);
 app.use('/users', userRouter);
 app.use('/books', bookRouter);
+app.use('/category', categoryRouter);
 app.use('/likes', likeRouter);
 
 app.listen(app.get('port'), () => {
