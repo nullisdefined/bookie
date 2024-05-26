@@ -19,22 +19,30 @@ exports.authenticateToken = (req, res, next) => {
 };
 
 exports.getAllBooksHandler = async(req, res) => {
-    const { category_id } = req.query;
+    const { category_id, isNew } = req.query;
     if(category_id) {
         try {
-            const [rows] = await connection.execute('SELECT * FROM books WHERE category_id = ?', [category_id]);
-            if(rows.length > 0) {
+            let query = `SELECT books.id, title, summary, author, price, pub_date FROM books `;
+            if(isNew === 'true') 
+                query += `WHERE pub_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() AND category_id = ?`;
+            else 
+                query += `WHERE category_id = ?`;
+            const [rows] = await connection.execute(query, [category_id]);
+            if(rows.length > 0) 
                 res.status(StatusCodes.OK).json(rows);
-            } else {
-                return res.status(StatusCodes.NOT_FOUND).json({ msg: 'NOT_FOUND' });
-            }
+            else
+                return res.status(StatusCodes.NO_CONTENT).json({ msg: 'NO_CONTENT' });
         } catch(err) {
             console.error(err);
             res.status(StatusCodes.BAD_REQUEST).json({ msg: 'BAD_REQUEST' });
         }
     } else {
         try {
-            const [rows] = await connection.execute('SELECT * FROM books');
+            let query = `SELECT books.*, category.name AS 'category_name' FROM books
+                LEFT JOIN category ON books.category_id = category.id `;
+            if(isNew === 'true')
+                query += `WHERE pub_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()`;
+            const [rows] = await connection.execute(query);
             if(rows.length > 0) {
                 res.status(StatusCodes.OK).json(rows);
             } else {
@@ -50,7 +58,9 @@ exports.getAllBooksHandler = async(req, res) => {
 exports.getBookHandler = async(req, res) => {
     try {
         const { id } = req.params;
-        const [rows] = await connection.execute('SELECT * FROM books WHERE id = ?', [id]);
+        const [rows] = await connection.execute(`SELECT books.*, category.name AS 'category_name' FROM books 
+                LEFT JOIN category ON books.category_id = category.id
+                WHERE books.id = ?`, [id]);
         if(rows.length > 0) {
             res.status(StatusCodes.OK).json(rows[0]);
         } else {
