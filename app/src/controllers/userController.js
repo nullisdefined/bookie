@@ -52,7 +52,7 @@ exports.loginHandler = async(req, res) => {
             const inputHashedPassword = await crypto.pbkdf2Sync(pwd, salt, 10000, 64, 'sha512').toString('base64');
             if(inputHashedPassword === hashedPassword) {
                 const payload = { email: rows[0].email };
-                const options = { expiresIn: '3m' };
+                const options = { expiresIn: '30m' };
                 const token = jwt.sign(payload, process.env.SECRET_KEY, options);
                 res.cookie('token', token, {
                     httpOnly: true,
