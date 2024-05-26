@@ -25,8 +25,10 @@ exports.getAllBooksHandler = async(req, res) => {
             let query = `SELECT books.id, title, summary, author, price, pub_date FROM books `;
             if(isNew === 'true') 
                 query += `WHERE pub_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() AND category_id = ?`;
-            else 
+            else if(isNew === 'false' || isNew === undefined)
                 query += `WHERE category_id = ?`;
+            else
+                return res.status(StatusCodes.BAD_REQUEST).json({ msg: 'BAD_REQUEST' });
             const [rows] = await connection.execute(query, [category_id]);
             if(rows.length > 0) 
                 res.status(StatusCodes.OK).json(rows);
