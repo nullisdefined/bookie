@@ -5,24 +5,13 @@ const { StatusCodes } = require('http-status-codes');
 
 dotenv.config();
 
-exports.authenticateToken = (req, res, next) => {
-    const token = req.cookies.token;
-    if(!token) return res.status(StatusCodes.UNAUTHORIZED).json({ msg: '로그인을 먼저 해주세요.' });
-    try {
-        const user = jwt.verify(token, process.env.SECRET_KEY);
-        req.user = user;
-        next();
-    } catch(err) {
-        console.error(err);
-        return res.status(StatusCodes.FORBIDDEN).json({ msg: '권한이 없습니다.' });
-    }
-};
-
 exports.getAllBooksHandler = async (req, res) => {
     const { category_id, isNew, limit = 4, page = 1 } = req.query;
     const offset = limit * (page - 1);
     try {
-        let query = 'SELECT books.id, title, summary, author, price, pub_date FROM books';
+        let query = `SELECT books.id, title, summary, author, price, pub_date, 
+            (SELECT count(*) FROM likes WHERE liked_book_id = books.id) AS 'likes'
+            FROM books`;
         let params = [];
         if(category_id) {
             query += ' WHERE category_id = ?';
@@ -57,11 +46,18 @@ exports.getAllBooksHandler = async (req, res) => {
 exports.getBookHandler = async(req, res) => {
     try {
         const { id } = req.params;
-        const [rows] = await connection.execute(`SELECT books.*, category.name AS 'category_name' FROM books 
-                LEFT JOIN category ON books.category_id = category.id
-                WHERE books.id = ?`, [id]);
+        const user_id = req.user.id;
+        const [rows] = await connection.execute(`SELECT books.*, category.name AS 'category_name',
+            (SELECT COUNT(*) FROM likes WHERE liked_book_id = books.id) AS 'likes',
+            (SELECT COUNT(*) FROM likes WHERE liked_book_id = books.id AND user_id = ?) AS 'liked'
+            FROM books 
+            LEFT JOIN category ON books.category_id = category.id
+            WHERE books.id = ?`, [user_id, id]);
         if(rows.length > 0) {
-            res.status(StatusCodes.OK).json(rows[0]);
+            res.status(StatusCodes.OK).json({
+                ...rows[0],
+                liked: rows[0].liked > 0
+            });
         } else {
             return res.status(StatusCodes.BAD_REQUEST).json({ msg: 'BAD_REQUEST' });
         }
