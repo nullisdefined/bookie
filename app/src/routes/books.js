@@ -1,6 +1,6 @@
 const express = require('express');
 const bookController = require('../controllers/bookController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const authMiddleware = require('../middlewares/authToken');
 
 const router = express();
 router.use(express.json());
