@@ -9,6 +9,7 @@ const bookRouter = require('./src/routes/books');
 const categoryRouter = require('./src/routes/category');
 const likeRouter = require('./src/routes/likes');
 const cartRouter = require('./src/routes/carts');
+const orderRouter = require('./src/routes/orders');
 
 dotenv.config({ path: path.join(__dirname, '..', '.env')});
 const app = express();
@@ -23,6 +24,7 @@ app.use('/books', bookRouter);
 app.use('/category', categoryRouter);
 app.use('/likes', likeRouter);
 app.use('/carts', cartRouter);
+app.use('/orders', orderRouter);
 
 app.listen(app.get('port'), () => {
     console.log(`* ${app.get('port')}번 서버 대기 중`);

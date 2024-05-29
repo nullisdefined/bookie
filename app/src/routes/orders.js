@@ -1,26 +1,13 @@
 const express = require('express');
+const orderController = require('../controllers/orderController');
+const authMiddleware = require('../middlewares/authToken');
+
 const router = express();
 
 router.use(express.json());
 
-const orderHandler = (req, res) => {
-
-};
-const getOrdersHandler = (req, res) => {
-
-};
-const getOrderByOrderIdHandler = (req, res) => {
-
-};
-
-router.post('/',
-    orderHandler
-);
-router.get('/',
-    getOrdersHandler
-);
-router.get('/:orderId',
-    getOrderByOrderIdHandler
-)
+router.post('/', authMiddleware.authenticateToken, orderController.orderHandler);
+router.get('/', authMiddleware.authenticateToken, orderController.getOrdersHandler);
+router.get('/:orderId', authMiddleware.authenticateToken, orderController.getOrderDetailHandler);
 
 module.exports = router;
