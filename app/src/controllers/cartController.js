@@ -21,7 +21,7 @@ exports.getCartItemsHandler = async(req, res) => {
         const user_id = req.user.id;
         let params = [user_id];
         let query = `
-            SELECT cartItems.id, book_id, title, summary quantity, price
+            SELECT cartItems.id, book_id, title, summary, quantity, price
             FROM cartItems LEFT JOIN books
             ON cartItems.book_id = books.id
             WHERE user_id = ?`;
