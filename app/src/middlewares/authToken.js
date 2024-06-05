@@ -13,6 +13,6 @@ exports.authenticateToken = async(req, res, next) => {
         next();
     } catch(err) {
         console.error(err);
-        return res.status(StatusCodes.FORBIDDEN).json({ msg: '권한이 없습니다.' });
+        return res.status(StatusCodes.FORBIDDEN).json({ msg: '로그인 세션이 만료되었습니다. 다시 로그인 해주세요.' });
     }
 };
