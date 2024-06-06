@@ -3,7 +3,6 @@ const path = require('path');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
-const indexRouter = require('./src/routes/index');
 const userRouter = require('./src/routes/users');
 const bookRouter = require('./src/routes/books');
 const categoryRouter = require('./src/routes/category');
@@ -18,7 +17,6 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(cookieParser());
 
-app.use(indexRouter);
 app.use('/users', userRouter);
 app.use('/books', bookRouter);
 app.use('/category', categoryRouter);
